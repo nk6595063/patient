@@ -1,0 +1,77 @@
+// login : async (email, password,res) => {
+//   try {
+//     const result = await new Promise((resolve, reject) => {
+//       connection.query("SELECT password FROM loginuser WHERE email=?", [email], (err, result) => {
+//         if (err) {
+//           console.error("Database error:", err);
+//           return reject("Database error");
+//         }
+//         if (result.length > 0) {
+//           return resolve(result);
+//         } else {
+//           return reject("Email not found");
+//         }
+//       });
+//     });
+  
+//     const isMatch = await bcrypt.compare(password, result[0].password);
+//     if (isMatch) {
+//       const sessionId = uuid();
+//       sessions[sessionId] = { email, password };
+//       res.set('Set-Cookie', `sessions=${sessionId}`);
+
+//       // Query to get all users from the database
+//       const users = await new Promise((resolve, reject) => {
+//         connection.query('SELECT * FROM loginuser', (err, rows) => {
+//           if (err) {
+//             return reject(err);
+//           }
+//           return resolve(rows);
+//         });
+//       });
+
+//       console.log(users);
+//       return users;
+//     } else {
+//       throw new Error("Authentication Failed");
+//     }
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     throw { status: 'error', error: error.message || error };
+//   }
+// },
+
+
+
+// forget: async (email, name,password) => {
+//   try {
+//     const result = await new Promise((resolve, reject) => {
+//       connection.query('SELECT name FROM loginuser WHERE email = ?', [email], async (err, results) => {
+//         if (err) {
+//           console.error(err);
+//           reject("database error");
+//         } else if (results.length === 0) {
+//           reject("invalid mail");
+//         } else if (name !== results[0].name) {
+//           reject("password not match");
+//         } else {
+//           const hashedPassword=await bcrypt.hash(password,10);
+//           console.log(hashedPassword);
+//           connection.query('UPDATE loginuser SET password = ? WHERE email = ?', [hashedPassword, email], (updateErr,result) => {
+//             if (updateErr) {
+//               console.error(updateErr);
+//               reject(err);
+//             } else {
+//               resolve(results);
+//             }
+//           });
+//         }
+//       });
+//     });
+//     console.log(result);
+//     return result;
+//   } catch (error) {
+//     console.error("Error in forget function:", error);
+//   return { status: 'error', error };
+//   }
+// }
