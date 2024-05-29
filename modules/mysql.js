@@ -1,18 +1,18 @@
-const { LoginUser, getDB } = require('../dbms');
-
-
+const dbms= require('../dbms');
 const bcrypt = require("bcrypt");
 const uuid = require('uuid').v4;
-// const bodyParser = require("body-parser");
-// var cookieSession = require('cookie-session')
+
 const sessions = {};
+const document = 'logs';
+const document1 = 'd_avail';
+
 
 const MySql = {
   signup :async (user) => {
     try {
-      const db = getDB();
+      const db =dbms.getDB();
 
-      const collection = await db.collection((LoginUser.collection.name));
+      const collection = await db.collection(document);
       await collection.createIndex({
         email: 1,
         phone: 1
@@ -32,8 +32,10 @@ const MySql = {
 
 login : async (email, password, res) => {
   try {
-    // Find user by email
-    const user = await LoginUser.findOne({ email });
+    const db = dbms.getDB();
+    const collection = await db.collection(document);
+    const user = await collection.findOne({ email });
+    console.log(user);
     if (!user) {
       throw new Error('Email not found');
     }
@@ -50,8 +52,7 @@ login : async (email, password, res) => {
     sessions[sessionId] = { email, password };
     res.set('Set-Cookie', `sessions=${sessionId}`);
 
-    // return db.LoginUser.findMany();
-    return await LoginUser.find({ email });
+    return await collection.find({ email }).toArray();
   } catch (error) {
     console.error('Login error:', error);
     throw { status: 'error', error: error.message || error };
@@ -61,8 +62,10 @@ login : async (email, password, res) => {
 
 forget : async (email, name, password) => {
   try {
-    // const db = getDB();
-    const users = await LoginUser.findOne({ email });
+
+    const db = dbms.getDB();
+    const collection = await db.collection(document);
+    const users = await collection .findOne({ email });
     console.log(users);
     if (!users) {
       throw new Error('invalid mail');
@@ -77,17 +80,30 @@ forget : async (email, name, password) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log(hashedPassword);
 
-    // Update the user's password
-    users.password = hashedPassword;
-    console.log(users);
-  
 
-    return   await users.save();
+    const result = await collection.updateOne(
+      { email: email },
+      { $set: { password: hashedPassword } }
+    );
+
+    return  result;
 
   } catch (error) {
     console.error("Error in forget function:", error);
     return { status: 'error', error: error.message || error };
   }
+},
+
+d_avail:async()=>{
+  try{
+    const db =await dbms.getDB();
+    const collection = await db.collection(document1);
+    return await collection.find().toArray();
+  }
+  catch (error) {
+    console.error('Error fetching users:', error);
+    throw error;
+}
 },
 
 

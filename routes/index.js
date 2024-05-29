@@ -124,7 +124,19 @@ const usercon = {
             console.error("Error in forget function:", err);
             return res.status(500).json({ status: "error", message: "Internal server error" });
         }
-    }   
+    },
+    d_avail:async (req,res)=>{
+        try{
+            const result = await MySql.d_avail();
+            return res.status(200).json({ status: 'success', message: result });
+        }
+        catch(err){
+            console.error("Error in davail function:", err);
+            return res.status(500).json({ status: "error", message: "Internal server error" });
+        }
+    },
+
+
 };
 
 module.exports = usercon;
